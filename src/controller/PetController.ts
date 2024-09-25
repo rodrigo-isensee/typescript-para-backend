@@ -13,20 +13,16 @@ function geraId() {
 
 export default class PetController {
   constructor(private repository: PetRepository) {}
-  criaPet(req: Request, res: Response) {
+  async criaPet(req: Request, res: Response) {
     const { adotado, especie, dataDeNascimento, nome } = <PetEntity>req.body;
 
     if (!Object.values(EnumEspecie).includes(especie)) {
       return res.status(400).json({ error: "Especie inválida" });
     }
 
-    const novoPet = new PetEntity();
-    (novoPet.id = geraId()),
-      (novoPet.adotado = adotado),
-      (novoPet.especie = especie),
-      (novoPet.dataDeNascimento = dataDeNascimento),
-      (novoPet.nome = nome),
-      this.repository.criaPet(novoPet);
+    const novoPet = new PetEntity(nome, especie, dataDeNascimento, adotado);
+
+    await this.repository.criaPet(novoPet);
     return res.status(201).json(novoPet);
   }
 
@@ -52,6 +48,20 @@ export default class PetController {
     const { id } = req.params;
 
     const { success, message } = await this.repository.deletaPet(Number(id));
+
+    if (!success) {
+      return res.status(404).json({ message });
+    }
+    return res.sendStatus(204);
+  }
+
+  async adotaPet(req: Request, res: Response) {
+    const { pet_id, adotante_id } = req.params;
+
+    const { success, message } = await this.repository.adotaPet(
+      Number(pet_id),
+      Number(adotante_id)
+    );
 
     if (!success) {
       return res.status(404).json({ message });
