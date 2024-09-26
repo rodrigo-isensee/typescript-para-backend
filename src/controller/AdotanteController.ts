@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import AdotanteEntity from "../entities/AdotanteEntity";
 import AdotanteRepository from "../repositories/AdotanteRepository";
 import EnderecoEntity from "../entities/Endereco";
-import * as yup from "yup";
+
 import {
   TipoRequestBodyAdotante,
   TipoRequestParamsAdotante,
@@ -28,7 +28,7 @@ export default class AdotanteController {
     await this.repository.criaAdotante(novoAdotante);
     return res
       .status(201)
-      .json({ data: { id: novoAdotante.id, nome, celular, endereco } });
+      .json({ dados: { id: novoAdotante.id, nome, celular, endereco } });
   }
   async atualizaAdotante(
     req: Request<TipoRequestParamsAdotante, {}, TipoRequestBodyAdotante>,
@@ -41,7 +41,7 @@ export default class AdotanteController {
     );
 
     if (!success) {
-      return res.status(404).json({ error: message });
+      return res.status(404).json({ erros: message });
     }
 
     return res.sendStatus(204);
@@ -52,7 +52,7 @@ export default class AdotanteController {
     res: Response<TipoResponseBodyAdotante>
   ) {
     const listaDeAdotantes = await this.repository.listaAdotantes();
-    const data = listaDeAdotantes.map((adotante) => {
+    const dados = listaDeAdotantes.map((adotante) => {
       return {
         id: adotante.id,
         nome: adotante.nome,
@@ -60,7 +60,7 @@ export default class AdotanteController {
         endereco: adotante.endereco !== null ? adotante.endereco : undefined,
       };
     });
-    return res.json({ data });
+    return res.json({ dados });
   }
 
   async deletaAdotante(
@@ -74,7 +74,7 @@ export default class AdotanteController {
     );
 
     if (!success) {
-      return res.status(404).json({ error: message });
+      return res.status(404).json({ erros: message });
     }
     return res.sendStatus(204);
   }
@@ -91,7 +91,7 @@ export default class AdotanteController {
     );
 
     if (!success) {
-      return res.status(404).json({ error: message });
+      return res.status(404).json({ erros: message });
     }
     return res.sendStatus(204);
   }
