@@ -15,4 +15,5 @@ export const verificaIdMiddleware = (
       );
     }
   }
+  return next();
 };
